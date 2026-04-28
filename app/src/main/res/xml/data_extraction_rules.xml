@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Required by AGP 8.x — define what data can be extracted / backed up -->
+<data-extraction-rules>
+    <cloud-backup>
+        <exclude domain="sharedpref" path="vexora_secure_prefs.xml" />
+    </cloud-backup>
+    <device-transfer>
+        <exclude domain="sharedpref" path="vexora_secure_prefs.xml" />
+    </device-transfer>
+</data-extraction-rules>

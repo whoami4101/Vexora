@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#1976D2</color>
+    <color name="colorPrimaryDark">#0D47A1</color>
+    <color name="colorPrimaryVariant">#1565C0</color>
+    <color name="colorOnPrimary">#FFFFFF</color>
+    <color name="colorSecondary">#43A047</color>
+    <color name="colorSecondaryVariant">#2E7D32</color>
+    <color name="colorOnSecondary">#FFFFFF</color>
+    <color name="colorSurface">#FFFFFF</color>
+    <color name="colorBackground">#F5F7FA</color>
+    <color name="colorError">#D32F2F</color>
+    <color name="colorOnError">#FFFFFF</color>
+
+    <!-- Status indicator colours -->
+    <color name="status_ok">#2E7D32</color>
+    <color name="status_warn">#E65100</color>
+    <color name="status_error">#B71C1C</color>
+
+    <!-- Shield icon gradient -->
+    <color name="shield_top">#1976D2</color>
+    <color name="shield_bottom">#0D47A1</color>
+</resources>
