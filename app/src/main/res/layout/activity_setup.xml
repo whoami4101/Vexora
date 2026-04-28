@@ -54,7 +54,7 @@
                 android:layout_height="wrap_content"
                 android:hint="@string/pin_hint"
                 android:layout_marginBottom="16dp"
-                app:passwordToggleEnabled="true">
+                app:endIconMode="password_toggle">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etPin"
@@ -70,7 +70,7 @@
                 android:layout_height="wrap_content"
                 android:hint="@string/pin_confirm_hint"
                 android:layout_marginBottom="32dp"
-                app:passwordToggleEnabled="true">
+                app:endIconMode="password_toggle">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etPinConfirm"

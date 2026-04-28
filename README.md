@@ -123,6 +123,6 @@ com.vexora.app
 
 ---
 
-## Licence
+## License
 
 MIT — see [LICENSE](LICENSE).
