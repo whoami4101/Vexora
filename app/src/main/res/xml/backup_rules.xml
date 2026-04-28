@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<full-backup-content>
+    <!-- Exclude encrypted prefs so they are not transferred unencrypted -->
+    <exclude domain="sharedpref" path="vexora_secure_prefs.xml" />
+</full-backup-content>
