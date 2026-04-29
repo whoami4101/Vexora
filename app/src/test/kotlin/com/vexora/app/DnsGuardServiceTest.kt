@@ -1,6 +1,7 @@
 package com.vexora.app
 
 import com.vexora.app.accessibility.DnsGuardService
+import com.vexora.app.dns.DnsManager
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
@@ -14,6 +15,8 @@ import org.junit.Test
  *   - The fully-qualified class name assumed by [DnsGuardService.isAccessibilityEnabled].
  *   - The format of the component-name string that is built and matched against the
  *     system's enabled-accessibility-services setting.
+ *   - Structural guarantees about the DNS keys used by the ContentObserver registered
+ *     in [DnsGuardService.onServiceConnected].
  */
 class DnsGuardServiceTest {
 
@@ -60,5 +63,34 @@ class DnsGuardServiceTest {
         val packageName = "com.vexora.app"
         val componentName = "$packageName/${DnsGuardService::class.java.name}"
         assertTrue(componentName.endsWith("DnsGuardService"))
+    }
+
+    // ── ContentObserver / dynamic DNS-change keys ─────────────────────────────
+
+    @Test
+    fun `PRIVATE_DNS_MODE_KEY used by ContentObserver is non-blank`() {
+        // DnsGuardService registers a ContentObserver on Settings.Global.getUriFor
+        // using DnsManager.PRIVATE_DNS_MODE_KEY. The key must be a valid, non-blank string.
+        assertTrue(DnsManager.PRIVATE_DNS_MODE_KEY.isNotBlank())
+    }
+
+    @Test
+    fun `PRIVATE_DNS_SPECIFIER_KEY used by ContentObserver is non-blank`() {
+        assertTrue(DnsManager.PRIVATE_DNS_SPECIFIER_KEY.isNotBlank())
+    }
+
+    @Test
+    fun `ContentObserver watches two distinct settings keys`() {
+        // The service registers an observer on both keys independently.
+        // They must be different strings so distinct URIs are produced.
+        assertFalse(
+            DnsManager.PRIVATE_DNS_MODE_KEY == DnsManager.PRIVATE_DNS_SPECIFIER_KEY
+        )
+    }
+
+    @Test
+    fun `DNS keys used by ContentObserver contain no whitespace`() {
+        assertFalse(DnsManager.PRIVATE_DNS_MODE_KEY.contains(Regex("\\s")))
+        assertFalse(DnsManager.PRIVATE_DNS_SPECIFIER_KEY.contains(Regex("\\s")))
     }
 }

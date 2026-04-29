@@ -3,9 +3,13 @@ package com.vexora.app.accessibility
 import android.accessibilityservice.AccessibilityService
 import android.accessibilityservice.AccessibilityServiceInfo
 import android.content.Context
+import android.database.ContentObserver
+import android.os.Handler
+import android.os.Looper
 import android.provider.Settings
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
+import com.vexora.app.dns.DnsManager
 
 /**
  * Accessibility service that prevents the user from:
@@ -13,9 +17,17 @@ import android.view.accessibility.AccessibilityNodeInfo
  *  2. Removing the Vexora device administrator (which would allow uninstallation).
  *
  * When either of those screens is detected, the service performs a BACK navigation
- * to return the user to the previous screen.
+ * to return the user to the previous screen and re-applies the correct DNS settings.
+ *
+ * Additionally, a [ContentObserver] monitors the Private DNS system settings for any
+ * out-of-band changes (e.g. via ADB or other apps) and re-applies the correct values
+ * dynamically whenever a change is detected.
  */
 class DnsGuardService : AccessibilityService() {
+
+    private var dnsObserver: ContentObserver? = null
+    private val dnsManager: DnsManager by lazy { DnsManager(applicationContext) }
+    private val mainHandler: Handler by lazy { Handler(Looper.getMainLooper()) }
 
     override fun onAccessibilityEvent(event: AccessibilityEvent) {
         if (event.eventType != AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED &&
@@ -30,8 +42,13 @@ class DnsGuardService : AccessibilityService() {
         // Only act on the Android Settings app
         if (!SETTINGS_PACKAGES.any { packageName.startsWith(it) }) return
 
-        if (isPrivateDnsScreen(className, event) || isDeviceAdminRemovalScreen(event)) {
+        val isPrivateDns = isPrivateDnsScreen(className, event)
+        if (isPrivateDns || isDeviceAdminRemovalScreen(event)) {
             performGlobalAction(GLOBAL_ACTION_BACK)
+            // Re-apply the correct DNS after navigating away to counteract any partial change
+            if (isPrivateDns) {
+                dnsManager.applyPrivateDns()
+            }
         }
     }
 
@@ -109,6 +126,12 @@ class DnsGuardService : AccessibilityService() {
         // Service interrupted — no clean-up needed
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        dnsObserver?.let { contentResolver.unregisterContentObserver(it) }
+        dnsObserver = null
+    }
+
     companion object {
         private val SETTINGS_PACKAGES = listOf(
             "com.android.settings",
@@ -132,6 +155,7 @@ class DnsGuardService : AccessibilityService() {
 
     override fun onServiceConnected() {
         super.onServiceConnected()
+
         // Override service info to ensure we listen to all relevant event types
         serviceInfo = serviceInfo?.also { info ->
             info.eventTypes = AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED or
@@ -142,5 +166,36 @@ class DnsGuardService : AccessibilityService() {
             info.packageNames = SETTINGS_PACKAGES.toTypedArray()
             info.notificationTimeout = 100
         }
+
+        registerDnsObserver()
+    }
+
+    /**
+     * Registers a [ContentObserver] on both Private DNS settings keys.
+     *
+     * Whenever `private_dns_mode` or `private_dns_specifier` is changed by any means
+     * (Settings UI, ADB, or another app), the observer immediately re-applies the
+     * correct AdGuard Family DNS values so the protection cannot be bypassed.
+     */
+    private fun registerDnsObserver() {
+        val observer = object : ContentObserver(mainHandler) {
+            override fun onChange(selfChange: Boolean) {
+                if (!dnsManager.isPrivateDnsConfigured()) {
+                    dnsManager.applyPrivateDns()
+                }
+            }
+        }
+        dnsObserver = observer
+
+        contentResolver.registerContentObserver(
+            Settings.Global.getUriFor(DnsManager.PRIVATE_DNS_MODE_KEY),
+            false,
+            observer
+        )
+        contentResolver.registerContentObserver(
+            Settings.Global.getUriFor(DnsManager.PRIVATE_DNS_SPECIFIER_KEY),
+            false,
+            observer
+        )
     }
 }
