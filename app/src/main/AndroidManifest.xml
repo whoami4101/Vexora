@@ -2,8 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- Required to write Private DNS settings -->
-    <uses-permission android:name="android.permission.WRITE_SECURE_SETTINGS" />
+    <!-- Required to write Private DNS settings (granted via ADB; system-level permission) -->
+    <uses-permission
+        android:name="android.permission.WRITE_SECURE_SETTINGS"
+        tools:ignore="ProtectedPermissions" />
     <!-- Required to read current network DNS settings -->
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <!-- Required for Device Admin -->
