@@ -124,7 +124,7 @@ class PinManagerTest {
     }
 
     @Test
-    fun `very long pin (100 characters) can be saved and verified`() {
+    fun `very long pin (104 characters) can be saved and verified`() {
         val longPin = "A1b2C3d4".repeat(13) // 104 characters
         pinManager.savePin(longPin)
         assertTrue(pinManager.verifyPin(longPin))

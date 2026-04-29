@@ -26,13 +26,13 @@ class BootReceiverTest {
     }
 
     @Test
-    fun `LOCKED_BOOT_COMPLETED action string matches expected value`() {
-        // This string is the standard action for direct-boot completion (API 24+).
-        // It is hardcoded in BootReceiver because the Intent constant was only
-        // introduced in API 24 and we keep minSdk at 26, but we verify the literal
-        // here to catch accidental typos.
-        val lockedBootAction = "android.intent.action.LOCKED_BOOT_COMPLETED"
-        assertEquals("android.intent.action.LOCKED_BOOT_COMPLETED", lockedBootAction)
+    fun `LOCKED_BOOT_COMPLETED action string matches the Android system constant`() {
+        // Intent.ACTION_LOCKED_BOOT_COMPLETED was added in API 24; minSdk is 26,
+        // so we can compare our hardcoded literal against the platform constant.
+        assertEquals(
+            android.content.Intent.ACTION_LOCKED_BOOT_COMPLETED,
+            "android.intent.action.LOCKED_BOOT_COMPLETED"
+        )
     }
 
     @Test
