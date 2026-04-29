@@ -84,7 +84,6 @@ class DnsGuardServiceTest {
         // The service registers an observer on both keys independently.
         // They must be different strings so distinct URIs are produced.
         assertFalse(
-            "The two DNS keys watched by the ContentObserver must be distinct",
             DnsManager.PRIVATE_DNS_MODE_KEY == DnsManager.PRIVATE_DNS_SPECIFIER_KEY
         )
     }

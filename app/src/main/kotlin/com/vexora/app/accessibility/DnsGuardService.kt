@@ -26,7 +26,8 @@ import com.vexora.app.dns.DnsManager
 class DnsGuardService : AccessibilityService() {
 
     private var dnsObserver: ContentObserver? = null
-    private lateinit var dnsManager: DnsManager
+    private val dnsManager: DnsManager by lazy { DnsManager(applicationContext) }
+    private val mainHandler: Handler by lazy { Handler(Looper.getMainLooper()) }
 
     override fun onAccessibilityEvent(event: AccessibilityEvent) {
         if (event.eventType != AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED &&
@@ -154,7 +155,6 @@ class DnsGuardService : AccessibilityService() {
 
     override fun onServiceConnected() {
         super.onServiceConnected()
-        dnsManager = DnsManager(applicationContext)
 
         // Override service info to ensure we listen to all relevant event types
         serviceInfo = serviceInfo?.also { info ->
@@ -178,7 +178,7 @@ class DnsGuardService : AccessibilityService() {
      * correct AdGuard Family DNS values so the protection cannot be bypassed.
      */
     private fun registerDnsObserver() {
-        val observer = object : ContentObserver(Handler(Looper.getMainLooper())) {
+        val observer = object : ContentObserver(mainHandler) {
             override fun onChange(selfChange: Boolean) {
                 if (!dnsManager.isPrivateDnsConfigured()) {
                     dnsManager.applyPrivateDns()
