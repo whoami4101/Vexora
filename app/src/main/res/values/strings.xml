@@ -76,4 +76,19 @@
     <string name="error_pin_empty">Please enter your PIN</string>
     <string name="error_pin_wrong">Wrong PIN. %d attempts remaining</string>
     <string name="error_too_many_attempts">Too many failed attempts. Please try again in 30 seconds.</string>
+
+    <!-- Admin Settings screen -->
+    <string name="btn_admin_settings">Admin Settings</string>
+    <string name="admin_settings_title">Admin Settings</string>
+    <string name="admin_settings_subtitle">Manage protection settings</string>
+    <string name="pin_reason_settings">Enter PIN to access admin settings</string>
+    <string name="btn_change_pin">Change Protection PIN</string>
+    <string name="btn_re_apply_dns">Re-apply DNS Protection</string>
+    <string name="change_pin_title">Change Protection PIN</string>
+    <string name="change_pin_desc">Enter and confirm your new PIN (minimum 4 digits).</string>
+    <string name="toast_pin_changed">PIN changed successfully</string>
+    <string name="toast_dns_reapplied">DNS protection re-applied</string>
+    <string name="btn_save_pin">Save New PIN</string>
+    <string name="section_dns">DNS Protection</string>
+    <string name="section_pin">PIN Management</string>
 </resources>
