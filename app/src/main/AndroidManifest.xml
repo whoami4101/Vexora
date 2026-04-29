@@ -48,6 +48,11 @@
             android:showOnLockScreen="true"
             android:turnScreenOn="true" />
 
+        <!-- PIN-protected admin settings screen -->
+        <activity
+            android:name=".AdminSettingsActivity"
+            android:exported="false" />
+
         <!-- Device Admin Receiver — enables uninstall protection -->
         <receiver
             android:name=".admin.VexoraDeviceAdminReceiver"

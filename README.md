@@ -110,6 +110,7 @@ com.vexora.app
 ├── MainActivity               — Status dashboard
 ├── SetupActivity              — Step-by-step setup wizard
 ├── PinActivity                — PIN entry screen (uninstall guard + settings access)
+├── AdminSettingsActivity      — PIN-protected admin panel (change PIN, re-apply DNS)
 ├── BootReceiver               — Re-applies DNS on device boot
 ├── admin/
 │   └── VexoraDeviceAdminReceiver  — Prevents uninstall without PIN

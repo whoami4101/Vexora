@@ -6,6 +6,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.vexora.app.accessibility.DnsGuardService
 import com.vexora.app.admin.VexoraDeviceAdminReceiver
@@ -20,6 +21,20 @@ class MainActivity : AppCompatActivity() {
     private lateinit var adminComponent: ComponentName
     private lateinit var pinManager: PinManager
     private lateinit var dnsManager: DnsManager
+
+    private val adminLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) {
+        updateStatusDisplay()
+    }
+
+    private val pinSettingsLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == RESULT_OK) {
+            startActivity(Intent(this, AdminSettingsActivity::class.java))
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,6 +70,18 @@ class MainActivity : AppCompatActivity() {
         binding.btnApplyDns.setOnClickListener {
             applyDns()
         }
+
+        binding.btnAdminSettings.setOnClickListener {
+            openAdminSettings()
+        }
+    }
+
+    private fun openAdminSettings() {
+        val pinIntent = PinActivity.createIntent(
+            this,
+            getString(R.string.pin_reason_settings)
+        )
+        pinSettingsLauncher.launch(pinIntent)
     }
 
     private fun updateStatusDisplay() {
@@ -101,6 +128,9 @@ class MainActivity : AppCompatActivity() {
         binding.btnAdminEnable.visibility = if (!isAdminActive) View.VISIBLE else View.GONE
         binding.btnAccessibility.visibility = if (!isAccessibilityEnabled) View.VISIBLE else View.GONE
         binding.btnApplyDns.visibility = if (!isDnsApplied) View.VISIBLE else View.GONE
+
+        // Admin Settings is available once a PIN has been set
+        binding.btnAdminSettings.visibility = if (isPinSet) View.VISIBLE else View.GONE
     }
 
     private fun requestDeviceAdmin() {
@@ -111,8 +141,7 @@ class MainActivity : AppCompatActivity() {
                 getString(R.string.device_admin_request_reason)
             )
         }
-        @Suppress("DEPRECATION")
-        startActivityForResult(intent, REQUEST_CODE_ADMIN)
+        adminLauncher.launch(intent)
     }
 
     private fun openAccessibilitySettings() {
@@ -130,16 +159,5 @@ class MainActivity : AppCompatActivity() {
         }
         updateStatusDisplay()
     }
-
-    @Deprecated("Deprecated in Java")
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == REQUEST_CODE_ADMIN) {
-            updateStatusDisplay()
-        }
-    }
-
-    companion object {
-        private const val REQUEST_CODE_ADMIN = 1001
-    }
 }
+
